@@ -20,8 +20,8 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
 
         String sql = """
                 INSERT INTO usuario
-                    (nome, email, senha, departamento_id)
-                VALUES (?, ?, ?, ?)
+                    (nome, email, senha, tipo, departamento_id)
+                VALUES (?, ?, ?, 'COMUM', ?)
                 """;
 
         try (
