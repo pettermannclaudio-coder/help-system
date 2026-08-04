@@ -18,7 +18,7 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
                 """
                 INSERT INTO usuario
                 (nome,email,senha,departamento_id)
-                VALUES (?,?,?,?,?)
+                VALUES (?,?,?,?)
                 """;
 
         try (ConnectionFactory conn = ConnectionFactoryFactory.getConnectionFactory();
@@ -56,8 +56,8 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
             statement.setString(1, usuario.getNome());
             statement.setString(2, usuario.getEmail());
             statement.setString(3, usuario.getSenha());
-            statement.setInt(5, usuario.getDepartamento().getId());
-            statement.setInt(6, usuario.getId());
+            statement.setInt(4, usuario.getDepartamento().getId());
+            statement.setInt(5, usuario.getId());
 
             statement.executeUpdate();
 
@@ -100,7 +100,7 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
                 usuario.setId(res.getInt("id"));
                 usuario.setNome(res.getString("nome"));
                 usuario.setEmail(res.getString("email"));
-                usuario.setSenha(res.getString("senha")););
+                usuario.setSenha(res.getString("senha"));
                 usuario.setDepartamento(departamentoDAO.buscarPorId(
                             res.getInt("departamento_id")
                     )
