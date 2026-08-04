@@ -1,6 +1,6 @@
 package dao;
 
-import connection.Connection;
+import connection.ConnectionFactory;
 import model.*;
 
 import java.sql.*;
@@ -21,8 +21,8 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
                 VALUES (?,?,?,?,?)
                 """;
 
-        try (Connection connection = Connection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (ConnectionFactory conn = ConnectionFactoryFactory.getConnectionFactory();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
 
                 statement.setString(1, usuario.getNome());
                 statement.setString(2, usuario.getEmail());
@@ -50,8 +50,8 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
                 WHERE id=?
                 """;
 
-        try (Connection connection = connection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (ConnectionFactory conn = conn.getConnectionFactory();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
 
             statement.setString(1, usuario.getNome());
             statement.setString(2, usuario.getEmail());
@@ -72,8 +72,8 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
 
         String sql = "DELETE FROM usuario WHERE id=?";
 
-        try (Connection connection = connection.getConnection();
-            PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (ConnectionFactory conn = conn.getConnectionFactory();
+            PreparedStatement statement = conn.prepareStatement(sql)) {
             statement.setInt(1, id);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -88,8 +88,8 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
         String sql = "SELECT * FROM usuario WHERE id=?";
 
         try (
-                Connection connection = connection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
+                ConnectionFactory conn = conn.getConnectionFactory();
+                PreparedStatement statement = conn.prepareStatement(sql)) {
 
                 statement.setInt(1, id);
                 ResultSet res = statement.executeQuery();
@@ -125,8 +125,8 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
         String sql = "SELECT * FROM usuario ORDER BY nome";
 
         try (
-            Connection connection = connection.getConnection();
-             Statement statement = connection.createStatement();
+            ConnectionFactory conn = conn.getConnectionFactory();
+             Statement statement = conn.createStatement();
              ResultSet res = statement.executeQuery(sql)) {
 
             while (res.next()) {
@@ -152,9 +152,9 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
 
         String sql = "SELECT * FROM usuario WHERE email=?";
 
-        try (Connection connection = connection.getConnection();
+        try (ConnectionFactory conn = conn.getConnectionFactory();
 
-            PreparedStatement statement = connection.prepareStatement(sql)) {
+            PreparedStatement statement = conn.prepareStatement(sql)) {
 
             statement.setString(1, email);
             ResultSet res = statement.executeQuery();
