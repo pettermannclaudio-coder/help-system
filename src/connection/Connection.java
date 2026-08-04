@@ -10,11 +10,9 @@ public final class Connection {
             "jdbc:mysql://localhost:3306/helpdesk";
 
     private static final String USER = "root";
-
     private static final String PASSWORD = "";
 
     public static Connection getConnection() {
-
         try {
 
             return DriverManager.getConnection(
@@ -24,12 +22,7 @@ public final class Connection {
             );
 
         } catch (SQLException e) {
-
-            throw new RuntimeException(
-                    "Erro ao conectar ao banco:",
-                    e
-            );
-
+            throw new RuntimeException("Erro ao conectar ao banco:", e);
         }
 
     }

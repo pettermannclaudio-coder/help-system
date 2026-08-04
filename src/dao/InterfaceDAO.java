@@ -2,7 +2,7 @@ package dao;
 
 import java.util.List;
 
-public interface CrudDAO<T> {
+public interface InterfaceDAO<T> {
 
     void salvar(T objeto);
 
