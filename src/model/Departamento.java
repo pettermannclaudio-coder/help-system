@@ -13,10 +13,6 @@ public class Departamento {
         this.nome = nome;
     }
 
-    public Departamento(String nome) {
-        this.nome = nome;
-    }
-
     public Integer getId() {
         return id;
     }
