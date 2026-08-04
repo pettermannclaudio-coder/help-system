@@ -2,14 +2,17 @@ package model;
 
 public class Usuario {
 
-    private integer id;
+    private Integer id;
     private String nome;
     private String email;
     private String senha;
     private Departamento departamento;
 
+    public Usuario() {
 
-    public Usuario(integer id, String nome, String email, String senha, Departamento departamento) {
+    }
+
+    public Usuario(Integer id, String nome, String email, String senha, Departamento departamento) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -17,11 +20,11 @@ public class Usuario {
         this.departamento = departamento;
     }
 
-    public integer getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -63,7 +66,6 @@ public class Usuario {
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 ", email='" + email + '\'' +
-                ", senha='" + senha + '\'' +
                 ", departamento=" + departamento +
                 '}';
     }
