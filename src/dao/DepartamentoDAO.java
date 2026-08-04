@@ -1,13 +1,13 @@
 package dao;
 
-import conn.ConnectionFactory;
+import connection.ConnectionFactory;
 import model.Departamento;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DepartamentoDAO implements CrudDAO<Departamento> {
+public class DepartamentoDAO implements InterfaceDAO<Departamento> {
 
     @Override
     public void salvar(Departamento departamento) {

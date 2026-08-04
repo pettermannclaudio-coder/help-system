@@ -12,9 +12,9 @@ public final class ConnectionFactory {
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
-    public static ConnectionFactory getConnection() {
-        try {
+    public static Connection getConnection() {
 
+        try {
             return DriverManager.getConnection(
                     URL,
                     USER,
@@ -24,7 +24,5 @@ public final class ConnectionFactory {
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao conectar ao banco:", e);
         }
-
     }
-
 }

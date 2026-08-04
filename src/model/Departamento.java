@@ -5,8 +5,11 @@ public class Departamento {
     private Integer id;
     private String nome;
 
-    public Departamento(Integer id, String nome) {
-        this.id = id;
+    public Departamento() {
+
+    }
+
+    public Departamento(String nome) {
         this.nome = nome;
     }
 

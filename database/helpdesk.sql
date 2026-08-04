@@ -14,6 +14,16 @@ CREATE TABLE departamento (
 
 );
 
+INSERT INTO departamento(nome) VALUES
+                                   ('TI'),
+                                   ('Financeiro'),
+                                   ('RH'),
+                                   ('Marketing'),
+                                   ('Comercial'),
+                                   ('Compras'),
+                                   ('Jurídico'),
+                                   ('Administrativo');
+
 CREATE TABLE usuario (
 
     id INT AUTO_INCREMENT PRIMARY KEY,

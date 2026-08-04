@@ -182,3 +182,4 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
 
         return usuario;
     }
+}
