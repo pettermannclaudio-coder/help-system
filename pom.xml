@@ -23,6 +23,7 @@
 
         <mysql.connector.version>9.1.0</mysql.connector.version>
         <jbcrypt.version>0.4</jbcrypt.version>
+        <junit.version>5.13.4</junit.version>
     </properties>
 
     <dependencies>
@@ -37,6 +38,12 @@
             <artifactId>jbcrypt</artifactId>
             <version>${jbcrypt.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -50,6 +57,17 @@
                 <configuration>
                     <release>${maven.compiler.release}</release>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+
+                <configuration>
+                    <mainClass>main.Main</mainClass>
+                </configuration>
+
             </plugin>
 
         </plugins>
