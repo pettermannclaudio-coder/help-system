@@ -19,7 +19,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
 
         <mysql.connector.version>9.1.0</mysql.connector.version>
         <jbcrypt.version>0.4</jbcrypt.version>
