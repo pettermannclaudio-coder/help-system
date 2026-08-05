@@ -103,7 +103,7 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
                 UPDATE solicitacao
                 SET titulo=?,
                     descricao=?,
-                    categoria=?,
+                    departamento_id=?,
                     status=?
                 WHERE id=?
                 """;
@@ -207,7 +207,7 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
                 SELECT *
                 FROM solicitacao
                 WHERE usuario_id=?
-                ORDER BY data_abertura DESC
+                ORDER BY data_criacao DESC
                 """;
 
         try (Connection connection = ConnectionFactory.getConnection();
