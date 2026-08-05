@@ -6,6 +6,7 @@ public class Usuario {
     private String nome;
     private String email;
     private String senha;
+    private TipoUsuario tipo;
     private Departamento departamento;
 
     public Usuario() {
@@ -13,10 +14,21 @@ public class Usuario {
     }
 
     public Usuario(Integer id, String nome, String email, String senha, Departamento departamento) {
+        this(id, nome, email, senha, TipoUsuario.COMUM, departamento);
+    }
+
+    public Usuario(
+            Integer id,
+            String nome,
+            String email,
+            String senha,
+            TipoUsuario tipo,
+            Departamento departamento) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+        this.tipo = tipo;
         this.departamento = departamento;
     }
 
@@ -52,6 +64,14 @@ public class Usuario {
         this.senha = senha;
     }
 
+    public TipoUsuario getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoUsuario tipo) {
+        this.tipo = tipo;
+    }
+
     public Departamento getDepartamento() {
         return departamento;
     }
@@ -66,6 +86,7 @@ public class Usuario {
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 ", email='" + email + '\'' +
+                ", tipo=" + tipo +
                 ", departamento=" + departamento +
                 '}';
     }
