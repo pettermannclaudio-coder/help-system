@@ -122,9 +122,6 @@ public class SolicitacaoView extends JFrame {
 
     }
 
-    /**
-     * Carrega todas as solicitações do banco.
-     */
     private void carregarSolicitacoes() {
 
         modelo.setRowCount(0);
@@ -191,10 +188,9 @@ public class SolicitacaoView extends JFrame {
 
         Integer id = (Integer) modelo.getValueAt(linha, 0);
 
-        JOptionPane.showMessageDialog(
-                this,
-                "Solicitação selecionada: " + id
-        );
+        Solicitacao solicitacao = solicitacaoService.buscarPorId(id);
+
+        new DetalheSolicitacaoView(solicitacao).setVisible(true);
 
     }
 
