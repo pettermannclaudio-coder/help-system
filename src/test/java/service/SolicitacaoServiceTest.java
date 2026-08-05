@@ -1,5 +1,6 @@
-package dao;
+package service;
 
+import dao.SolicitacaoDAO;
 import model.Departamento;
 import model.Solicitacao;
 import model.Usuario;
