@@ -1,16 +1,17 @@
 package service;
 
-import connection.ConnectionFactory;
+import connection.DatabaseInitializer;
 import dao.DepartamentoDAO;
 import dao.UsuarioDAO;
 import model.Departamento;
 import model.Usuario;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import util.PasswordUtil;
 
-import java.sql.Connection;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,35 +19,33 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class UsuarioCadastroIntegrationTest {
 
-    private final UsuarioDAO usuarioDAO = new UsuarioDAO();
-    private Integer usuarioCriadoId;
+    @TempDir
+    static Path diretorioTemporario;
 
     @BeforeAll
-    static void verificarDisponibilidadeDoBanco() {
-        try (Connection connection = ConnectionFactory.getConnection()) {
-            assumeTrue(!connection.isClosed());
-        } catch (Exception e) {
-            assumeTrue(false, "MySQL indisponível em localhost:3306.");
-        }
+    static void prepararBancoSqlite() {
+        Path banco = diretorioTemporario.resolve("cadastro.db");
+        System.setProperty("help.db.type", "SQLITE");
+        System.setProperty(
+                "help.db.url",
+                "jdbc:sqlite:" + banco.toAbsolutePath().toString().replace('\\', '/')
+        );
+        DatabaseInitializer.initialize();
     }
 
-    @AfterEach
-    void removerUsuarioCriado() {
-        if (usuarioCriadoId != null) {
-            usuarioDAO.excluir(usuarioCriadoId);
-        }
+    @AfterAll
+    static void limparConfiguracao() {
+        System.clearProperty("help.db.type");
+        System.clearProperty("help.db.url");
     }
 
     @Test
     void deveCadastrarEPersistirUsuarioComSenhaProtegida() {
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
         List<Departamento> departamentos = new DepartamentoDAO().listar();
-        assumeFalse(departamentos.isEmpty(), "Cadastre ao menos um departamento para executar o teste.");
-
         Departamento departamento = departamentos.getFirst();
         String email = "teste+" + UUID.randomUUID() + "@example.com";
         String senha = "Senha123";
@@ -59,13 +58,17 @@ class UsuarioCadastroIntegrationTest {
         );
 
         Usuario usuarioPersistido = usuarioDAO.buscarPorEmail(email);
-        assertNotNull(usuarioPersistido);
-        usuarioCriadoId = usuarioPersistido.getId();
 
+        assertNotNull(usuarioPersistido);
         assertEquals("Usuário de Teste", usuarioRetornado.getNome());
         assertEquals(email, usuarioPersistido.getEmail());
-        assertEquals(departamento.getId(), usuarioPersistido.getDepartamento().getId());
+        assertEquals(
+                departamento.getId(),
+                usuarioPersistido.getDepartamento().getId()
+        );
         assertNotEquals(senha, usuarioPersistido.getSenha());
         assertTrue(PasswordUtil.verificarSenha(senha, usuarioPersistido.getSenha()));
+
+        usuarioDAO.excluir(usuarioPersistido.getId());
     }
 }
