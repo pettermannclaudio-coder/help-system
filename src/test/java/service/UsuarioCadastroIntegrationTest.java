@@ -4,6 +4,7 @@ import connection.DatabaseInitializer;
 import dao.DepartamentoDAO;
 import dao.UsuarioDAO;
 import model.Departamento;
+import model.TipoUsuario;
 import model.Usuario;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -60,8 +61,10 @@ class UsuarioCadastroIntegrationTest {
         Usuario usuarioPersistido = usuarioDAO.buscarPorEmail(email);
 
         assertNotNull(usuarioPersistido);
+        assertNotNull(usuarioRetornado.getId());
         assertEquals("Usuário de Teste", usuarioRetornado.getNome());
         assertEquals(email, usuarioPersistido.getEmail());
+        assertEquals(TipoUsuario.COMUM, usuarioPersistido.getTipo());
         assertEquals(
                 departamento.getId(),
                 usuarioPersistido.getDepartamento().getId()
