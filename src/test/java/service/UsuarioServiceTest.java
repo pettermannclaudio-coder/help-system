@@ -2,6 +2,7 @@ package service;
 
 import dao.UsuarioDAO;
 import model.Departamento;
+import model.TipoUsuario;
 import model.Usuario;
 import org.junit.jupiter.api.Test;
 import util.PasswordUtil;
@@ -30,6 +31,7 @@ class UsuarioServiceTest {
         assertSame(usuario, usuarioDAO.usuarioSalvo);
         assertEquals("Maria da Silva", usuario.getNome());
         assertEquals("maria@example.com", usuario.getEmail());
+        assertEquals(TipoUsuario.COMUM, usuario.getTipo());
         assertEquals(departamento, usuario.getDepartamento());
         assertNotEquals("Senha123", usuario.getSenha());
         assertTrue(PasswordUtil.verificarSenha("Senha123", usuario.getSenha()));
