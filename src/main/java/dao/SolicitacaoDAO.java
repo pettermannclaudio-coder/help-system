@@ -17,22 +17,27 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
 
     @Override
     public void salvar(Solicitacao solicitacao) {
-        String sql = """
-                INSERT INTO solicitacao
-                (titulo,
-                 descricao,
-                 status,
-                 departamento_id,
-                 data_abertura,
-                 usuario_id)
-                VALUES (?,?,?,?,?,?)
-                """;
 
-        try (Connection connection =
-                     ConnectionFactory.getConnection();
+        String sql = """
+            INSERT INTO solicitacao
+            (
+                titulo,
+                descricao,
+                status,
+                data_criacao,
+                usuario_id,
+                departamento_id
+            )
+            VALUES (?,?,?,?,?,?)
+            """;
+
+        try (Connection connection = ConnectionFactory.getConnection();
 
              PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+                     connection.prepareStatement(
+                             sql,
+                             Statement.RETURN_GENERATED_KEYS
+                     )) {
 
             statement.setString(
                     1,
@@ -44,29 +49,43 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
                     solicitacao.getDescricao()
             );
 
-            statement.setInt(
-                    4,
-                    solicitacao.getDepartamento().getId()
-            );
-
             statement.setString(
-                    5,
+                    3,
                     solicitacao.getStatus()
             );
 
             statement.setTimestamp(
-                    6,
+                    4,
                     Timestamp.valueOf(
                             solicitacao.getDataCriacao()
                     )
             );
 
             statement.setInt(
-                    7,
+                    5,
                     solicitacao.getUsuario().getId()
             );
 
-            statement.executeUpdate();
+            statement.setInt(
+                    6,
+                    solicitacao.getDepartamento().getId()
+            );
+
+            int linhasAfetadas = statement.executeUpdate();
+
+            if (linhasAfetadas == 0) {
+                throw new SQLException("Nenhuma solicitação foi inserida.");
+            }
+
+            try (ResultSet rs = statement.getGeneratedKeys()) {
+
+                if (rs.next()) {
+                    solicitacao.setId(rs.getInt(1));
+                } else {
+                    throw new SQLException("Não foi possível obter o ID gerado.");
+                }
+
+            }
 
         } catch (SQLException e) {
 
@@ -78,7 +97,6 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
         }
 
     }
-
     @Override
     public void atualizar(Solicitacao solicitacao) {
         String sql = """
