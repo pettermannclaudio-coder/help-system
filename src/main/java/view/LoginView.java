@@ -5,105 +5,156 @@ import java.awt.*;
 
 public class LoginView extends JFrame {
 
-    private JTextField campoEmail;
-    private JPasswordField campoSenha;
-    private JButton botaoEntrar;
+    private JTextField txtEmail;
+    private JPasswordField txtSenha;
+    private JButton btnEntrar;
 
     public LoginView() {
         configurarJanela();
         criarComponentes();
+        configurarEventos();
+
+        setVisible(true);
     }
 
     private void configurarJanela() {
         setTitle("Help System - Login");
-        setSize(500, 400);
+        setSize(430, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
-        setLayout(null);
     }
 
     private void criarComponentes() {
-        JLabel titulo = new JLabel("HELP SYSTEM");
-        titulo.setFont(new Font("Arial", Font.BOLD, 30));
-        titulo.setBounds(145, 40, 250, 40);
-        add(titulo);
+        JPanel painelPrincipal = new JPanel(new GridBagLayout());
+        painelPrincipal.setBorder(
+                BorderFactory.createEmptyBorder(25, 35, 25, 35)
+        );
 
-        JLabel labelEmail = new JLabel("E-mail:");
-        labelEmail.setFont(new Font("Arial", Font.PLAIN, 16));
-        labelEmail.setBounds(70, 130, 80, 30);
-        add(labelEmail);
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        campoEmail = new JTextField();
-        campoEmail.setBounds(150, 130, 270, 35);
-        add(campoEmail);
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel labelSenha = new JLabel("Senha:");
-        labelSenha.setFont(new Font("Arial", Font.PLAIN, 16));
-        labelSenha.setBounds(70, 190, 80, 30);
-        add(labelSenha);
+        JLabel lblTitulo = new JLabel(
+                "HELP SYSTEM",
+                SwingConstants.CENTER
+        );
 
-        campoSenha = new JPasswordField();
-        campoSenha.setBounds(150, 190, 270, 35);
-        add(campoSenha);
+        lblTitulo.setFont(
+                new Font("Arial", Font.BOLD, 24)
+        );
 
-        botaoEntrar = new JButton("Entrar");
-        botaoEntrar.setFont(new Font("Arial", Font.PLAIN, 16));
-        botaoEntrar.setBounds(180, 270, 140, 45);
-        add(botaoEntrar);
+        JLabel lblSubtitulo = new JLabel(
+                "Acesse sua conta",
+                SwingConstants.CENTER
+        );
 
-        botaoEntrar.addActionListener(evento -> realizarLogin());
+        txtEmail = new JTextField(22);
+        txtSenha = new JPasswordField(22);
 
-        campoSenha.addActionListener(evento -> realizarLogin());
+        btnEntrar = new JButton("Entrar");
+
+        // Título
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+
+        painelPrincipal.add(lblTitulo, gbc);
+
+        // Subtítulo
+        gbc.gridy = 1;
+        painelPrincipal.add(lblSubtitulo, gbc);
+
+        // E-mail
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+
+        painelPrincipal.add(new JLabel("E-mail:"), gbc);
+
+        gbc.gridx = 1;
+        painelPrincipal.add(txtEmail, gbc);
+
+        // Senha
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+
+        painelPrincipal.add(new JLabel("Senha:"), gbc);
+
+        gbc.gridx = 1;
+        painelPrincipal.add(txtSenha, gbc);
+
+        // Botão
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+
+        painelPrincipal.add(btnEntrar, gbc);
+
+        add(painelPrincipal);
+    }
+
+    private void configurarEventos() {
+        btnEntrar.addActionListener(evento -> realizarLogin());
+
+        /*
+         * Permite fazer login pressionando Enter
+         * no campo de senha.
+         */
+        txtSenha.addActionListener(evento -> realizarLogin());
     }
 
     private void realizarLogin() {
-        String email = campoEmail.getText().trim();
-        String senha = new String(campoSenha.getPassword());
+        String email = txtEmail.getText()
+                .trim()
+                .toLowerCase();
 
-        if (email.isBlank()) {
-            mostrarAviso("Informe o e-mail.");
-            campoEmail.requestFocus();
-            return;
-        }
+        String senha = new String(
+                txtSenha.getPassword()
+        );
 
-        if (senha.isBlank()) {
-            mostrarAviso("Informe a senha.");
-            campoSenha.requestFocus();
+        if (email.isBlank() || senha.isBlank()) {
+            mostrarAviso("Preencha o e-mail e a senha.");
             return;
         }
 
         /*
-         * Login temporário para testar as telas.
-         *
-         * Depois essa parte será substituída pelo UsuarioService,
-         * UsuarioDAO e consulta ao banco de dados.
+         * LOGIN TEMPORÁRIO DO ADMINISTRADOR
          */
-
         if (
-                email.equalsIgnoreCase("admin@helpsystem.com")
-                && senha.equals("123456")
+            email.equalsIgnoreCase("admin@helpsystem.com")
+            && senha.equals("123456")
         ) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Login de administrador realizado com sucesso!"
+                    "Login de administrador realizado com sucesso!",
+                    "Login realizado",
+                    JOptionPane.INFORMATION_MESSAGE
             );
 
             new MenuView(true).setVisible(true);
+
             dispose();
             return;
         }
 
+        /*
+         * LOGIN TEMPORÁRIO DO COLABORADOR
+         */
         if (
-                email.equalsIgnoreCase("usuario@helpsystem.com")
-                && senha.equals("123456")
+            email.equalsIgnoreCase("usuario@helpsystem.com")
+            && senha.equals("123456")
         ) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Login realizado com sucesso!"
+                    "Login de colaborador realizado com sucesso!",
+                    "Login realizado",
+                    JOptionPane.INFORMATION_MESSAGE
             );
 
             new MenuView(false).setVisible(true);
+
             dispose();
             return;
         }
@@ -111,24 +162,36 @@ public class LoginView extends JFrame {
         JOptionPane.showMessageDialog(
                 this,
                 "E-mail ou senha incorretos.",
-                "Login inválido",
+                "Login não realizado",
                 JOptionPane.ERROR_MESSAGE
         );
+
+        txtSenha.setText("");
+        txtSenha.requestFocus();
     }
 
     private void mostrarAviso(String mensagem) {
         JOptionPane.showMessageDialog(
                 this,
                 mensagem,
-                "Campo obrigatório",
+                "Atenção",
                 JOptionPane.WARNING_MESSAGE
         );
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            LoginView telaLogin = new LoginView();
-            telaLogin.setVisible(true);
+            try {
+                UIManager.setLookAndFeel(
+                        UIManager.getSystemLookAndFeelClassName()
+                );
+            } catch (Exception erro) {
+                System.out.println(
+                        "Não foi possível aplicar o visual do sistema."
+                );
+            }
+
+            new LoginView();
         });
     }
 }
