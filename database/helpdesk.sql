@@ -43,25 +43,29 @@ CREATE TABLE usuario (
 
 );
 
-CREATE TABLE solicitacao (
+insert into usuario (nome, email, senha, tipo, departamento_id) values (
+        'Oliver Edson Gomes',
+        'oliver.edson.gomes@hotmail.it',
+        "M3dRN3JWx0",
+        "Admin",
+        8
+      );
+
+CREATE TABLE solicitacao(
 
     id INT AUTO_INCREMENT PRIMARY KEY,
-
     titulo VARCHAR(200) NOT NULL,
-
     descricao TEXT NOT NULL,
-
-    categoria VARCHAR(100) NOT NULL,
-
     status ENUM('ABERTA','RESPONDIDA','RESOLVIDA')
         DEFAULT 'ABERTA',
-
-    data_abertura DATETIME DEFAULT CURRENT_TIMESTAMP,
-
+    data_criacao DATETIME
+        DEFAULT CURRENT_TIMESTAMP,
     usuario_id INT NOT NULL,
-
+    departamento_id INT NOT NULL,
     FOREIGN KEY(usuario_id)
-        REFERENCES usuario(id)
+        REFERENCES usuario(id),
+    FOREIGN KEY(departamento_id)
+        REFERENCES departamento(id)
 
 );
 

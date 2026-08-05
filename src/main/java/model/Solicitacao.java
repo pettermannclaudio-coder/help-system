@@ -7,6 +7,7 @@ public class Solicitacao {
     private Integer id;
     private String titulo;
     private String descricao;
+    private Departamento departamento;
     private Usuario usuario;
     private String status;
     private LocalDateTime dataCriacao;
@@ -15,23 +16,17 @@ public class Solicitacao {
     }
 
     public Solicitacao(Integer id, String titulo, String descricao,
-                       Usuario usuario, String status,
+                       Usuario usuario, String status, Departamento departamento,
                        LocalDateTime dataCriacao) {
         this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
         this.usuario = usuario;
         this.status = status;
+        this.departamento = departamento;
         this.dataCriacao = dataCriacao;
     }
 
-    public Solicitacao(String titulo, String descricao,
-                       Usuario usuario, String status) {
-        this.titulo = titulo;
-        this.descricao = descricao;
-        this.usuario = usuario;
-        this.status = status;
-    }
 
     public Integer getId() {
         return id;
@@ -75,6 +70,14 @@ public class Solicitacao {
 
     public LocalDateTime getDataCriacao() {
         return dataCriacao;
+    }
+
+    public Departamento getDepartamento() {
+        return departamento;
+    }
+
+    public void setDepartamento(Departamento departamento) {
+        this.departamento = departamento;
     }
 
     public void setDataCriacao(LocalDateTime dataCriacao) {

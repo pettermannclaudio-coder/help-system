@@ -1,28 +1,23 @@
 package connection;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public final class ConnectionFactory {
 
-    private static final String URL =
-            "jdbc:mysql://localhost:3306/helpdesk";
+    private static final Dotenv dotenv = Dotenv.load();
 
-    private static final String USER = "root";
-    private static final String PASSWORD = "";
+    private static final String URL = dotenv.get("DB_URL");
+    private static final String USER = dotenv.get("DB_USER");
+    private static final String PASSWORD = dotenv.get("DB_PASSWORD");
 
     public static Connection getConnection() {
-
         try {
-            return DriverManager.getConnection(
-                    URL,
-                    USER,
-                    PASSWORD
-            );
-
+            return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao conectar ao banco:", e);
+            throw new RuntimeException("Erro ao conectar ao banco.", e);
         }
     }
 }
