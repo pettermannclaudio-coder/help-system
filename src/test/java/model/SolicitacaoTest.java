@@ -11,6 +11,7 @@ class SolicitacaoTest {
     @Test
     void deveArmazenarOsDadosDaSolicitacao() {
         Usuario usuario = new Usuario();
+        Departamento departamento = new Departamento();
         LocalDateTime dataCriacao = LocalDateTime.of(2026, 8, 4, 15, 0);
 
         Solicitacao solicitacao = new Solicitacao(
@@ -19,6 +20,7 @@ class SolicitacaoTest {
                 "Não consigo acessar o sistema interno.",
                 usuario,
                 "ABERTA",
+                departamento,
                 dataCriacao
         );
 
