@@ -2,6 +2,7 @@ package service;
 
 import dao.UsuarioDAO;
 import model.Departamento;
+import model.TipoUsuario;
 import model.Usuario;
 import util.PasswordUtil;
 import util.ValidationUtil;
@@ -28,11 +29,27 @@ public class UsuarioService {
             String email,
             String senha,
             Departamento departamento) {
+        return cadastrar(
+                nome,
+                email,
+                senha,
+                TipoUsuario.COMUM,
+                departamento
+        );
+    }
+
+    public Usuario cadastrar(
+            String nome,
+            String email,
+            String senha,
+            TipoUsuario tipo,
+            Departamento departamento) {
         String nomeValidado = ValidationUtil.validarENormalizarNome(nome);
 
         String emailValidado = ValidationUtil.validarENormalizarEmail(email);
 
         ValidationUtil.validarSenha(senha);
+        ValidationUtil.validarTipoUsuario(tipo);
         validarDepartamento(departamento);
 
         Usuario usuarioExistente = usuarioDAO.buscarPorEmail(emailValidado);
@@ -49,6 +66,7 @@ public class UsuarioService {
         usuario.setNome(nomeValidado);
         usuario.setEmail(emailValidado);
         usuario.setSenha(senhaHash);
+        usuario.setTipo(tipo);
         usuario.setDepartamento(departamento);
 
         usuarioDAO.salvar(usuario);
@@ -165,6 +183,7 @@ public class UsuarioService {
     private void validarDepartamento(
             Departamento departamento) {
         if (departamento == null
+                || departamento.getId() == null
                 || departamento.getId() <= 0) {
             throw new IllegalArgumentException(
                     "Selecione um departamento válido.");

@@ -1,6 +1,7 @@
 package dao;
 
 import connection.ConnectionFactory;
+import model.TipoUsuario;
 import model.Usuario;
 
 import java.sql.Connection;
@@ -21,20 +22,28 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
         String sql = """
                 INSERT INTO usuario
                     (nome, email, senha, tipo, departamento_id)
-                VALUES (?, ?, ?, 'COMUM', ?)
+                VALUES (?, ?, ?, ?, ?)
                 """;
 
         try (
                 Connection connection = ConnectionFactory.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
+                PreparedStatement statement = connection.prepareStatement(
+                        sql,
+                        Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setString(1, usuario.getNome());
             statement.setString(2, usuario.getEmail());
             statement.setString(3, usuario.getSenha());
-            statement.setInt(4, usuario.getDepartamento().getId());
+            statement.setString(4, usuario.getTipo().name());
+            statement.setInt(5, usuario.getDepartamento().getId());
 
             statement.executeUpdate();
+
+            try (ResultSet chaves = statement.getGeneratedKeys()) {
+                if (chaves.next()) {
+                    usuario.setId(chaves.getInt(1));
+                }
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao salvar usuário.", e);
@@ -55,8 +64,7 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
 
         try (
                 Connection connection = ConnectionFactory.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
+                PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, usuario.getNome());
             statement.setString(2, usuario.getEmail());
@@ -78,8 +86,7 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
 
         try (
                 Connection connection = ConnectionFactory.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
+                PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
             statement.executeUpdate();
@@ -96,8 +103,7 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
 
         try (
                 Connection connection = ConnectionFactory.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
+                PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
 
@@ -125,8 +131,7 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
         try (
                 Connection connection = ConnectionFactory.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultado = statement.executeQuery(sql)
-        ) {
+                ResultSet resultado = statement.executeQuery(sql)) {
 
             while (resultado.next()) {
                 Usuario usuario = criarUsuario(resultado);
@@ -146,8 +151,7 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
 
         try (
                 Connection connection = ConnectionFactory.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
+                PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, email);
 
@@ -173,12 +177,13 @@ public class UsuarioDAO implements InterfaceDAO<Usuario> {
         usuario.setNome(resultado.getString("nome"));
         usuario.setEmail(resultado.getString("email"));
         usuario.setSenha(resultado.getString("senha"));
+        usuario.setTipo(
+                TipoUsuario.valueOf(resultado.getString("tipo")));
 
         int departamentoId = resultado.getInt("departamento_id");
 
         usuario.setDepartamento(
-                departamentoDAO.buscarPorId(departamentoId)
-        );
+                departamentoDAO.buscarPorId(departamentoId));
 
         return usuario;
     }

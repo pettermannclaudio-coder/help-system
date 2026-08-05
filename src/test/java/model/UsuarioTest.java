@@ -17,6 +17,7 @@ class UsuarioTest {
                 "Maria da Silva",
                 "maria@example.com",
                 "senha-hash",
+                TipoUsuario.ADMIN,
                 departamento
         );
 
@@ -24,6 +25,7 @@ class UsuarioTest {
         assertEquals("Maria da Silva", usuario.getNome());
         assertEquals("maria@example.com", usuario.getEmail());
         assertEquals("senha-hash", usuario.getSenha());
+        assertEquals(TipoUsuario.ADMIN, usuario.getTipo());
         assertEquals(departamento, usuario.getDepartamento());
         assertFalse(usuario.toString().contains("senha-hash"));
     }
