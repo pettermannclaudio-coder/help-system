@@ -111,11 +111,7 @@ public class MenuView extends JFrame {
                 });
 
                 btnListarSolicitacoes.addActionListener(evento -> {
-                        JOptionPane.showMessageDialog(
-                                        this,
-                                        "A tela de solicitações será criada posteriormente.",
-                                        "Solicitações",
-                                        JOptionPane.INFORMATION_MESSAGE);
+                        new SolicitacaoView().setVisible(true);
                 });
 
                 btnSair.addActionListener(evento -> sair());
