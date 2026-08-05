@@ -1,9 +1,6 @@
 package service;
 
-import connection.DatabaseInitializer;
-import dao.DepartamentoDAO;
 import dao.SolicitacaoDAO;
-import dao.UsuarioDAO;
 import model.Departamento;
 import model.Solicitacao;
 import model.Usuario;
