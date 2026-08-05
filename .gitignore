@@ -14,7 +14,7 @@
 *.jar
 *.war
 *.nar
-*.env
+**/.env
 *.ear
 *.zip
 *.tar.gz
