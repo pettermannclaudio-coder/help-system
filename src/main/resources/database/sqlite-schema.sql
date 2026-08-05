@@ -18,12 +18,13 @@ CREATE TABLE IF NOT EXISTS solicitacao (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     titulo TEXT NOT NULL,
     descricao TEXT NOT NULL,
-    categoria TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'ABERTA'
         CHECK (status IN ('ABERTA', 'RESPONDIDA', 'RESOLVIDA')),
-    data_abertura TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    data_criacao TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     usuario_id INTEGER NOT NULL,
-    FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+    departamento_id INTEGER NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+    FOREIGN KEY (departamento_id) REFERENCES departamento(id)
 );
 
 CREATE TABLE IF NOT EXISTS resposta (
