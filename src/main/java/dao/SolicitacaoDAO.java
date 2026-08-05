@@ -176,7 +176,41 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
 
     @Override
     public List<Solicitacao> listar() {
-        return List.of();
+
+        List<Solicitacao> solicitacoes = new ArrayList<>();
+
+        String sql = """
+            SELECT *
+            FROM solicitacao
+            ORDER BY data_criacao DESC
+            """;
+
+        try (Connection connection = ConnectionFactory.getConnection();
+
+             PreparedStatement statement =
+                     connection.prepareStatement(sql);
+
+             ResultSet rs = statement.executeQuery()) {
+
+            while (rs.next()) {
+
+                solicitacoes.add(
+                        criarSolicitacao(rs)
+                );
+
+            }
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Erro ao listar solicitações.",
+                    e
+            );
+
+        }
+
+        return solicitacoes;
+
     }
 
     private Solicitacao criarSolicitacao(ResultSet rs)
