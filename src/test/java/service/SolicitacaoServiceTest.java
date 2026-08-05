@@ -6,6 +6,8 @@ import model.Solicitacao;
 import model.Usuario;
 import org.junit.jupiter.api.*;
 
+import dao.SolicitacaoDAO;
+
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,8 +36,7 @@ class SolicitacaoDAOTest {
                 usuario,
                 "ABERTA",
                 departamento,
-                dataCriacao
-        );
+                dataCriacao);
     }
 
     @AfterEach
@@ -61,12 +62,10 @@ class SolicitacaoDAOTest {
         assertEquals(solicitacao.getStatus(), encontrada.getStatus());
         assertEquals(
                 solicitacao.getDepartamento().getId(),
-                encontrada.getDepartamento().getId()
-        );
+                encontrada.getDepartamento().getId());
         assertEquals(
                 solicitacao.getUsuario().getId(),
-                encontrada.getUsuario().getId()
-        );
+                encontrada.getUsuario().getId());
     }
 
     @Test
@@ -74,8 +73,7 @@ class SolicitacaoDAOTest {
 
         solicitacaoDAO.salvar(solicitacao);
 
-        Solicitacao encontrada =
-                solicitacaoDAO.buscarPorId(solicitacao.getId());
+        Solicitacao encontrada = solicitacaoDAO.buscarPorId(solicitacao.getId());
 
         assertNotNull(encontrada);
         assertEquals(solicitacao.getTitulo(), encontrada.getTitulo());
@@ -90,8 +88,7 @@ class SolicitacaoDAOTest {
 
         solicitacaoDAO.excluir(id);
 
-        Solicitacao encontrada =
-                solicitacaoDAO.buscarPorId(id);
+        Solicitacao encontrada = solicitacaoDAO.buscarPorId(id);
 
         assertNull(encontrada);
 
@@ -104,13 +101,10 @@ class SolicitacaoDAOTest {
         solicitacaoDAO.salvar(solicitacao);
 
         solicitacaoDAO.marcarComoResolvida(
-                solicitacao.getId()
-        );
+                solicitacao.getId());
 
-        Solicitacao encontrada =
-                solicitacaoDAO.buscarPorId(
-                        solicitacao.getId()
-                );
+        Solicitacao encontrada = solicitacaoDAO.buscarPorId(
+                solicitacao.getId());
 
         assertEquals("RESOLVIDA", encontrada.getStatus());
     }
