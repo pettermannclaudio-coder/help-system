@@ -2,203 +2,295 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.regex.Pattern;
 
 public class CadastroView extends JFrame {
 
-    private JTextField campoNome;
-    private JTextField campoEmail;
-    private JPasswordField campoSenha;
-    private JPasswordField campoConfirmarSenha;
-    private JComboBox<String> campoDepartamento;
-    private JComboBox<String> campoPerfil;
+    private JTextField txtNome;
+    private JTextField txtEmail;
+    private JPasswordField txtSenha;
+    private JPasswordField txtConfirmarSenha;
+
+    private JComboBox<String> comboPerfil;
+    private JComboBox<String> comboDepartamento;
+
+    private JButton btnCadastrar;
+    private JButton btnLimpar;
+    private JButton btnFechar;
 
     public CadastroView() {
         configurarJanela();
         criarComponentes();
+        configurarEventos();
     }
 
     private void configurarJanela() {
         setTitle("Help System - Cadastro de Usuário");
-        setSize(580, 630);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(520, 510);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
-        setLayout(null);
     }
 
     private void criarComponentes() {
-        JLabel titulo = new JLabel("CADASTRAR USUÁRIO");
-        titulo.setFont(new Font("Arial", Font.BOLD, 25));
-        titulo.setBounds(150, 30, 320, 40);
-        add(titulo);
+        JPanel painelPrincipal = new JPanel(
+                new GridBagLayout()
+        );
 
-        JLabel labelNome = new JLabel("Nome:");
-        labelNome.setBounds(70, 100, 140, 30);
-        add(labelNome);
+        painelPrincipal.setBorder(
+                BorderFactory.createEmptyBorder(20, 30, 20, 30)
+        );
 
-        campoNome = new JTextField();
-        campoNome.setBounds(220, 100, 280, 35);
-        add(campoNome);
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        JLabel labelEmail = new JLabel("E-mail:");
-        labelEmail.setBounds(70, 155, 140, 30);
-        add(labelEmail);
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        campoEmail = new JTextField();
-        campoEmail.setBounds(220, 155, 280, 35);
-        add(campoEmail);
+        JLabel lblTitulo = new JLabel(
+                "Cadastro de usuário",
+                SwingConstants.CENTER
+        );
 
-        JLabel labelSenha = new JLabel("Senha:");
-        labelSenha.setBounds(70, 210, 140, 30);
-        add(labelSenha);
+        lblTitulo.setFont(
+                new Font("Arial", Font.BOLD, 23)
+        );
 
-        campoSenha = new JPasswordField();
-        campoSenha.setBounds(220, 210, 280, 35);
-        add(campoSenha);
+        txtNome = new JTextField(24);
+        txtEmail = new JTextField(24);
+        txtSenha = new JPasswordField(24);
+        txtConfirmarSenha = new JPasswordField(24);
 
-        JLabel labelConfirmar = new JLabel("Confirmar senha:");
-        labelConfirmar.setBounds(70, 265, 140, 30);
-        add(labelConfirmar);
+        comboPerfil = new JComboBox<>(
+                new String[]{
+                    "COLABORADOR",
+                    "ADMIN"
+                }
+        );
 
-        campoConfirmarSenha = new JPasswordField();
-        campoConfirmarSenha.setBounds(220, 265, 280, 35);
-        add(campoConfirmarSenha);
+        comboDepartamento = new JComboBox<>(
+                new String[]{
+                    "Tecnologia",
+                    "Recursos Humanos",
+                    "Financeiro",
+                    "Comercial",
+                    "Atendimento",
+                    "Administrativo"
+                }
+        );
 
-        JLabel labelDepartamento = new JLabel("Departamento:");
-        labelDepartamento.setBounds(70, 320, 140, 30);
-        add(labelDepartamento);
+        btnCadastrar = new JButton("Cadastrar");
+        btnLimpar = new JButton("Limpar");
+        btnFechar = new JButton("Fechar");
 
-        String[] departamentos = {
-                "Selecione",
-                "Tecnologia da Informação",
-                "Recursos Humanos",
-                "Financeiro",
-                "Comercial",
-                "Atendimento",
-                "Administrativo"
-        };
+        // Título
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
 
-        campoDepartamento = new JComboBox<>(departamentos);
-        campoDepartamento.setBounds(220, 320, 280, 35);
-        add(campoDepartamento);
+        painelPrincipal.add(lblTitulo, gbc);
 
-        JLabel labelPerfil = new JLabel("Perfil:");
-        labelPerfil.setBounds(70, 375, 140, 30);
-        add(labelPerfil);
+        // Nome
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
 
-        String[] perfis = {
-                "COLABORADOR",
-                "ADMIN"
-        };
+        painelPrincipal.add(new JLabel("Nome:"), gbc);
 
-        campoPerfil = new JComboBox<>(perfis);
-        campoPerfil.setBounds(220, 375, 280, 35);
-        add(campoPerfil);
+        gbc.gridx = 1;
+        painelPrincipal.add(txtNome, gbc);
 
-        JButton botaoCadastrar = new JButton("Cadastrar");
-        botaoCadastrar.setBounds(205, 465, 160, 45);
-        add(botaoCadastrar);
+        // E-mail
+        gbc.gridx = 0;
+        gbc.gridy = 2;
 
-        botaoCadastrar.addActionListener(
-                evento -> cadastrarUsuario()
+        painelPrincipal.add(new JLabel("E-mail:"), gbc);
+
+        gbc.gridx = 1;
+        painelPrincipal.add(txtEmail, gbc);
+
+        // Senha
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+
+        painelPrincipal.add(new JLabel("Senha:"), gbc);
+
+        gbc.gridx = 1;
+        painelPrincipal.add(txtSenha, gbc);
+
+        // Confirmar senha
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+
+        painelPrincipal.add(
+                new JLabel("Confirmar senha:"),
+                gbc
+        );
+
+        gbc.gridx = 1;
+        painelPrincipal.add(txtConfirmarSenha, gbc);
+
+        // Perfil
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+
+        painelPrincipal.add(new JLabel("Perfil:"), gbc);
+
+        gbc.gridx = 1;
+        painelPrincipal.add(comboPerfil, gbc);
+
+        // Departamento
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+
+        painelPrincipal.add(
+                new JLabel("Departamento:"),
+                gbc
+        );
+
+        gbc.gridx = 1;
+        painelPrincipal.add(comboDepartamento, gbc);
+
+        // Botões
+        JPanel painelBotoes = new JPanel(
+                new FlowLayout(FlowLayout.CENTER, 10, 0)
+        );
+
+        painelBotoes.add(btnCadastrar);
+        painelBotoes.add(btnLimpar);
+        painelBotoes.add(btnFechar);
+
+        gbc.gridx = 0;
+        gbc.gridy = 7;
+        gbc.gridwidth = 2;
+
+        painelPrincipal.add(painelBotoes, gbc);
+
+        add(painelPrincipal);
+    }
+
+    private void configurarEventos() {
+        btnCadastrar.addActionListener(
+                evento -> cadastrar()
+        );
+
+        btnLimpar.addActionListener(
+                evento -> limparCampos()
+        );
+
+        btnFechar.addActionListener(
+                evento -> dispose()
         );
     }
 
-    private void cadastrarUsuario() {
-        String nome = campoNome.getText().trim();
-        String email = campoEmail.getText().trim();
-        String senha = new String(campoSenha.getPassword());
+    private void cadastrar() {
+        String nome = txtNome.getText().trim();
 
-        String confirmarSenha =
-                new String(campoConfirmarSenha.getPassword());
+        String email = txtEmail.getText()
+                .trim()
+                .toLowerCase();
 
-        String departamento =
-                campoDepartamento.getSelectedItem().toString();
+        String senha = new String(
+                txtSenha.getPassword()
+        );
 
-        String perfil =
-                campoPerfil.getSelectedItem().toString();
+        String confirmarSenha = new String(
+                txtConfirmarSenha.getPassword()
+        );
+
+        String perfil = (String)
+                comboPerfil.getSelectedItem();
+
+        String departamento = (String)
+                comboDepartamento.getSelectedItem();
 
         if (nome.isBlank()) {
-            mostrarAviso("Informe o nome.");
-            campoNome.requestFocus();
+            mostrarAviso("Informe o nome do usuário.");
+            txtNome.requestFocus();
             return;
         }
 
-        if (email.isBlank() || !email.contains("@")) {
+        if (!emailValido(email)) {
             mostrarAviso("Informe um e-mail válido.");
-            campoEmail.requestFocus();
+            txtEmail.requestFocus();
             return;
         }
 
         if (senha.length() < 6) {
             mostrarAviso(
-                    "A senha deve ter pelo menos 6 caracteres."
+                    "A senha deve possuir pelo menos 6 caracteres."
             );
-            campoSenha.requestFocus();
+
+            txtSenha.requestFocus();
             return;
         }
 
         if (!senha.equals(confirmarSenha)) {
-            mostrarAviso("As senhas não são iguais.");
-            campoConfirmarSenha.requestFocus();
+            mostrarAviso(
+                    "A senha e a confirmação são diferentes."
+            );
+
+            txtConfirmarSenha.setText("");
+            txtConfirmarSenha.requestFocus();
             return;
         }
 
-        if (departamento.equals("Selecione")) {
+        if (perfil == null) {
+            mostrarAviso("Selecione o perfil.");
+            return;
+        }
+
+        if (departamento == null) {
             mostrarAviso("Selecione o departamento.");
-            campoDepartamento.requestFocus();
             return;
         }
 
         /*
-         * Depois esta parte chamará:
+         * Neste momento estamos apenas testando a interface.
+         * Depois este trecho chamará:
          *
-         * Usuario usuario = new Usuario();
-         * usuario.setNome(nome);
-         * usuario.setEmail(email);
-         * usuario.setSenha(senha);
-         * usuario.setDepartamento(departamento);
-         * usuario.setPerfil(perfil);
-         *
-         * UsuarioService service = new UsuarioService();
-         * service.cadastrar(usuario);
+         * UsuarioDAO usuarioDAO = new UsuarioDAO();
+         * usuarioDAO.salvar(usuario);
          */
 
         JOptionPane.showMessageDialog(
                 this,
-                "Usuário cadastrado com sucesso!\n"
-                        + "Nome: " + nome + "\n"
-                        + "Departamento: " + departamento + "\n"
-                        + "Perfil: " + perfil,
-                "Cadastro concluído",
+                "Usuário cadastrado com sucesso!\n\n"
+                + "Nome: " + nome
+                + "\nE-mail: " + email
+                + "\nPerfil: " + perfil
+                + "\nDepartamento: " + departamento,
+                "Cadastro realizado",
                 JOptionPane.INFORMATION_MESSAGE
         );
 
         limparCampos();
     }
 
+    private boolean emailValido(String email) {
+        String formato =
+                "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+
+        return Pattern.matches(formato, email);
+    }
+
+    private void limparCampos() {
+        txtNome.setText("");
+        txtEmail.setText("");
+        txtSenha.setText("");
+        txtConfirmarSenha.setText("");
+
+        comboPerfil.setSelectedIndex(0);
+        comboDepartamento.setSelectedIndex(0);
+
+        txtNome.requestFocus();
+    }
+
     private void mostrarAviso(String mensagem) {
         JOptionPane.showMessageDialog(
                 this,
                 mensagem,
-                "Dados inválidos",
+                "Atenção",
                 JOptionPane.WARNING_MESSAGE
         );
-    }
-
-    private void limparCampos() {
-        campoNome.setText("");
-        campoEmail.setText("");
-        campoSenha.setText("");
-        campoConfirmarSenha.setText("");
-        campoDepartamento.setSelectedIndex(0);
-        campoPerfil.setSelectedIndex(0);
-        campoNome.requestFocus();
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new CadastroView().setVisible(true);
-        });
     }
 }
