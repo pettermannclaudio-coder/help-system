@@ -6,11 +6,13 @@ import model.*;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
+
+    private static final DateTimeFormatter SQLITE_DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
     private final DepartamentoDAO departamentoDAO = new DepartamentoDAO();
@@ -19,57 +21,48 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
     public void salvar(Solicitacao solicitacao) {
 
         String sql = """
-            INSERT INTO solicitacao
-            (
-                titulo,
-                descricao,
-                status,
-                data_criacao,
-                usuario_id,
-                departamento_id
-            )
-            VALUES (?,?,?,?,?,?)
-            """;
+                INSERT INTO solicitacao
+                (
+                    titulo,
+                    descricao,
+                    status,
+                    data_criacao,
+                    usuario_id,
+                    departamento_id
+                )
+                VALUES (?,?,?,?,?,?)
+                """;
 
         try (Connection connection = ConnectionFactory.getConnection();
 
-             PreparedStatement statement =
-                     connection.prepareStatement(
-                             sql,
-                             Statement.RETURN_GENERATED_KEYS
-                     )) {
+                PreparedStatement statement = connection.prepareStatement(
+                        sql,
+                        Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setString(
                     1,
-                    solicitacao.getTitulo()
-            );
+                    solicitacao.getTitulo());
 
             statement.setString(
                     2,
-                    solicitacao.getDescricao()
-            );
+                    solicitacao.getDescricao());
 
             statement.setString(
                     3,
-                    solicitacao.getStatus()
-            );
+                    solicitacao.getStatus());
 
-            statement.setTimestamp(
+            definirDataCriacao(
+                    statement,
                     4,
-                    Timestamp.valueOf(
-                            solicitacao.getDataCriacao()
-                    )
-            );
+                    solicitacao.getDataCriacao());
 
             statement.setInt(
                     5,
-                    solicitacao.getUsuario().getId()
-            );
+                    solicitacao.getUsuario().getId());
 
             statement.setInt(
                     6,
-                    solicitacao.getDepartamento().getId()
-            );
+                    solicitacao.getDepartamento().getId());
 
             int linhasAfetadas = statement.executeUpdate();
 
@@ -91,12 +84,12 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
 
             throw new RuntimeException(
                     "Erro ao salvar solicitação.",
-                    e
-            );
+                    e);
 
         }
 
     }
+
     @Override
     public void atualizar(Solicitacao solicitacao) {
         String sql = """
@@ -108,24 +101,20 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
                 WHERE id=?
                 """;
 
-        try (Connection connection =
-                     ConnectionFactory.getConnection();
+        try (Connection connection = ConnectionFactory.getConnection();
 
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+                PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, solicitacao.getTitulo());
             statement.setString(2, solicitacao.getDescricao());
             statement.setInt(3, solicitacao.getDepartamento().getId());
             statement.setString(
                     4,
-                    solicitacao.getStatus()
-            );
+                    solicitacao.getStatus());
 
             statement.setInt(
                     5,
-                    solicitacao.getId()
-            );
+                    solicitacao.getId());
 
             statement.executeUpdate();
 
@@ -142,7 +131,7 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
 
         try (Connection connection = ConnectionFactory.getConnection();
 
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+                PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
 
@@ -158,7 +147,7 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
         String sql = "SELECT * FROM solicitacao WHERE id=?";
 
         try (Connection connection = ConnectionFactory.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+                PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
@@ -180,23 +169,21 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
         List<Solicitacao> solicitacoes = new ArrayList<>();
 
         String sql = """
-            SELECT *
-            FROM solicitacao
-            ORDER BY data_criacao DESC
-            """;
+                SELECT *
+                FROM solicitacao
+                ORDER BY data_criacao DESC
+                """;
 
         try (Connection connection = ConnectionFactory.getConnection();
 
-             PreparedStatement statement =
-                     connection.prepareStatement(sql);
+                PreparedStatement statement = connection.prepareStatement(sql);
 
-             ResultSet rs = statement.executeQuery()) {
+                ResultSet rs = statement.executeQuery()) {
 
             while (rs.next()) {
 
                 solicitacoes.add(
-                        criarSolicitacao(rs)
-                );
+                        criarSolicitacao(rs));
 
             }
 
@@ -204,8 +191,7 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
 
             throw new RuntimeException(
                     "Erro ao listar solicitações.",
-                    e
-            );
+                    e);
 
         }
 
@@ -222,10 +208,7 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
         solicitacao.setTitulo(rs.getString("titulo"));
         solicitacao.setDescricao(rs.getString("descricao"));
         solicitacao.setStatus(rs.getString("status"));
-        Timestamp timestamp = rs.getTimestamp("data_criacao");
-        if (timestamp != null) {
-            solicitacao.setDataCriacao(timestamp.toLocalDateTime());
-        }
+        solicitacao.setDataCriacao(lerDataCriacao(rs));
         solicitacao.setUsuario(usuarioDAO.buscarPorId(rs.getInt("usuario_id")));
         solicitacao.setDepartamento(departamentoDAO.buscarPorId(rs.getInt("departamento_id")));
 
@@ -233,11 +216,43 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
 
     }
 
+    private void definirDataCriacao(
+            PreparedStatement statement,
+            int indice,
+            LocalDateTime dataCriacao) throws SQLException {
+        if (ConnectionFactory.isSqlite()) {
+            statement.setString(
+                    indice,
+                    dataCriacao.format(SQLITE_DATE_TIME));
+            return;
+        }
+
+        statement.setTimestamp(
+                indice,
+                Timestamp.valueOf(dataCriacao));
+    }
+
+    private LocalDateTime lerDataCriacao(ResultSet resultado)
+            throws SQLException {
+        if (ConnectionFactory.isSqlite()) {
+            String valor = resultado.getString("data_criacao");
+
+            return valor == null
+                    ? null
+                    : LocalDateTime.parse(valor, SQLITE_DATE_TIME);
+        }
+
+        Timestamp timestamp = resultado.getTimestamp("data_criacao");
+
+        return timestamp == null
+                ? null
+                : timestamp.toLocalDateTime();
+    }
+
     public List<Solicitacao> buscarPorUsuario(int usuarioId) {
 
         List<Solicitacao> lista = new ArrayList<>();
-        String sql =
-                """
+        String sql = """
                 SELECT *
                 FROM solicitacao
                 WHERE usuario_id=?
@@ -245,7 +260,7 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
                 """;
 
         try (Connection connection = ConnectionFactory.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+                PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, usuarioId);
             ResultSet rs = statement.executeQuery();
 
@@ -263,8 +278,7 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
 
     public void marcarComoResolvida(int id) {
 
-        String sql =
-                """
+        String sql = """
                 UPDATE solicitacao
                 SET status='RESOLVIDA'
                 WHERE id=?
@@ -272,7 +286,7 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
 
         try (Connection connection = ConnectionFactory.getConnection();
 
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+                PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
             statement.executeUpdate();
 
