@@ -12,6 +12,27 @@ public class DepartamentoService {
 
     public void salvar(Departamento departamento) {
 
+        if (departamento == null) {
+            throw new IllegalArgumentException("Departamento inválido.");
+        }
+
+        if (departamento.getNome() == null
+                || departamento.getNome().isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Informe o nome do departamento."
+            );
+
+        }
+
+        if (departamentoDAO.existePorNome(departamento.getNome())) {
+
+            throw new IllegalArgumentException(
+                    "Já existe um departamento com esse nome."
+            );
+
+        }
+
         departamentoDAO.salvar(departamento);
 
     }

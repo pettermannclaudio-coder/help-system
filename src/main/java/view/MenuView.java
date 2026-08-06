@@ -37,6 +37,7 @@ public class MenuView extends JFrame {
     private JTable tabela;
     private DefaultTableModel modeloTabela;
     private JButton btnCadastrarUsuario;
+    private JButton btnCadastrarDepartamento;
 
     public MenuView(boolean administrador, Usuario usuario) {
         this.administrador = administrador;
@@ -140,6 +141,7 @@ public class MenuView extends JFrame {
         JButton excluir = new JButton("Excluir");
         JButton atualizar = new JButton("Atualizar");
         btnCadastrarUsuario = new JButton("Cadastrar usuário");
+        btnCadastrarDepartamento = new JButton("Cadastrar departamento");
         JButton sair = new JButton("Sair");
 
         nova.addActionListener(evento -> abrirFormularioSolicitacao());
@@ -149,6 +151,11 @@ public class MenuView extends JFrame {
         atualizar.addActionListener(evento -> carregarSolicitacoes());
         btnCadastrarUsuario.addActionListener(
                 evento -> new CadastroView().setVisible(true));
+
+        btnCadastrarDepartamento.addActionListener(evento ->
+                new CadastroDepartamentoView().setVisible(true)
+        );
+
         sair.addActionListener(evento -> sair());
 
         acoes.add(nova);
@@ -158,6 +165,7 @@ public class MenuView extends JFrame {
         acoes.add(atualizar);
         if (administrador) {
             acoes.add(btnCadastrarUsuario);
+            acoes.add(btnCadastrarDepartamento);
         }
         acoes.add(sair);
         return acoes;
@@ -297,12 +305,12 @@ public class MenuView extends JFrame {
 
         JTextArea dados = new JTextArea(
                 "Título: " + solicitacao.getTitulo()
-                + "\nSolicitante: " + solicitacao.getUsuario().getNome()
-                + "\nCategoria: " + solicitacao.getDepartamento().getNome()
-                + "\nStatus: " + solicitacao.getStatus()
-                + "\nPrioridade: " + solicitacao.getPrioridade()
-                + "\nData: " + formatarData(solicitacao.getDataCriacao())
-                + "\n\n" + solicitacao.getDescricao());
+                        + "\nSolicitante: " + solicitacao.getUsuario().getNome()
+                        + "\nCategoria: " + solicitacao.getDepartamento().getNome()
+                        + "\nStatus: " + solicitacao.getStatus()
+                        + "\nPrioridade: " + solicitacao.getPrioridade()
+                        + "\nData: " + formatarData(solicitacao.getDataCriacao())
+                        + "\n\n" + solicitacao.getDescricao());
         dados.setEditable(false);
         dados.setLineWrap(true);
         dados.setWrapStyleWord(true);
