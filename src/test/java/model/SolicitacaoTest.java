@@ -29,6 +29,7 @@ class SolicitacaoTest {
         assertEquals("Não consigo acessar o sistema interno.", solicitacao.getDescricao());
         assertEquals(usuario, solicitacao.getUsuario());
         assertEquals("ABERTA", solicitacao.getStatus());
+        assertEquals(PrioridadeSolicitacao.MEDIA, solicitacao.getPrioridade());
         assertEquals(dataCriacao, solicitacao.getDataCriacao());
         assertEquals("Acesso ao sistema", solicitacao.toString());
     }

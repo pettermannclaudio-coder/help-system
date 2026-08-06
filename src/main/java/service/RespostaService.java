@@ -2,6 +2,8 @@ package service;
 
 import dao.RespostaDAO;
 import model.Resposta;
+import model.Solicitacao;
+import model.Usuario;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -91,6 +93,13 @@ public class RespostaService {
 
     public List<Resposta> buscarPorSolicitacao(int solicitacaoId) {
         return respostaDAO.buscarPorSolicitacao(solicitacaoId);
+    }
+
+    public Resposta responder(Solicitacao solicitacao, Usuario usuario, String texto) {
+        Resposta resposta = new Resposta(texto, usuario, solicitacao);
+        salvar(resposta);
+        new SolicitacaoService().marcarComoRespondida(solicitacao.getId());
+        return resposta;
     }
 
 }

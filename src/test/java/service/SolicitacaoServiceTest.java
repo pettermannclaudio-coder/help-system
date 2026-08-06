@@ -7,6 +7,7 @@ import dao.UsuarioDAO;
 
 import model.Departamento;
 import model.Solicitacao;
+import model.PrioridadeSolicitacao;
 import model.Usuario;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -94,6 +95,7 @@ class SolicitacaoDAOTest {
         assertEquals(solicitacao.getTitulo(), encontrada.getTitulo());
         assertEquals(solicitacao.getDescricao(), encontrada.getDescricao());
         assertEquals(solicitacao.getStatus(), encontrada.getStatus());
+        assertEquals(PrioridadeSolicitacao.MEDIA, encontrada.getPrioridade());
         assertEquals(
                 solicitacao.getDataCriacao(),
                 encontrada.getDataCriacao());
