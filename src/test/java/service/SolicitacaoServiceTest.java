@@ -1,6 +1,10 @@
 package service;
 
+import connection.DatabaseInitializer;
+import dao.DepartamentoDAO;
 import dao.SolicitacaoDAO;
+import dao.UsuarioDAO;
+
 import model.Departamento;
 import model.Solicitacao;
 import model.Usuario;
@@ -36,8 +40,7 @@ class SolicitacaoDAOTest {
         System.setProperty("help.db.type", "SQLITE");
         System.setProperty(
                 "help.db.url",
-                "jdbc:sqlite:" + banco.toAbsolutePath().toString().replace('\\', '/')
-        );
+                "jdbc:sqlite:" + banco.toAbsolutePath().toString().replace('\\', '/'));
 
         DatabaseInitializer.initialize();
         departamento = new DepartamentoDAO().listar().getFirst();
@@ -45,8 +48,7 @@ class SolicitacaoDAOTest {
                 "Usuário Solicitação",
                 "solicitacao@example.com",
                 "Senha123",
-                departamento
-        );
+                departamento);
     }
 
     @AfterAll
@@ -69,8 +71,7 @@ class SolicitacaoDAOTest {
                 usuario,
                 "ABERTA",
                 departamento,
-                LocalDateTime.of(2026, 8, 4, 15, 0)
-        );
+                LocalDateTime.of(2026, 8, 4, 15, 0));
     }
 
     @AfterEach
@@ -94,13 +95,14 @@ class SolicitacaoDAOTest {
         assertEquals(solicitacao.getDescricao(), encontrada.getDescricao());
         assertEquals(solicitacao.getStatus(), encontrada.getStatus());
         assertEquals(
+                solicitacao.getDataCriacao(),
+                encontrada.getDataCriacao());
+        assertEquals(
                 solicitacao.getDepartamento().getId(),
-                encontrada.getDepartamento().getId()
-        );
+                encontrada.getDepartamento().getId());
         assertEquals(
                 solicitacao.getUsuario().getId(),
-                encontrada.getUsuario().getId()
-        );
+                encontrada.getUsuario().getId());
     }
 
     @Test
@@ -130,8 +132,7 @@ class SolicitacaoDAOTest {
         solicitacaoDAO.marcarComoResolvida(solicitacao.getId());
 
         Solicitacao encontrada = solicitacaoDAO.buscarPorId(
-                solicitacao.getId()
-        );
+                solicitacao.getId());
 
         assertNotNull(encontrada);
         assertEquals("RESOLVIDA", encontrada.getStatus());
