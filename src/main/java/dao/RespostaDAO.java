@@ -127,6 +127,73 @@ public class RespostaDAO implements InterfaceDAO<Resposta> {
 
     };
 
+    public List<Resposta> buscarPorSolicitacao(int solicitacaoId) {
+
+        List<Resposta> respostas = new ArrayList<>();
+
+        String sql = """
+            SELECT
+                r.id,
+                r.texto,
+                r.data_resposta,
+
+                u.id AS usuario_id,
+                u.nome,
+                u.email,
+                u.tipo,
+
+                d.id AS departamento_id,
+                d.nome AS departamento,
+
+                s.id AS solicitacao_id,
+                s.titulo
+
+            FROM resposta r
+
+            INNER JOIN usuario u
+                ON r.usuario_id = u.id
+
+            INNER JOIN departamento d
+                ON u.departamento_id = d.id
+
+            INNER JOIN solicitacao s
+                ON r.solicitacao_id = s.id
+
+            WHERE s.id = ?
+
+            ORDER BY r.data_resposta ASC
+            """;
+
+        try (Connection connection = ConnectionFactory.getConnection();
+
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setInt(1, solicitacaoId);
+
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+
+                respostas.add(
+                        mapearResposta(rs)
+                );
+
+            }
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Erro ao buscar respostas da solicitação.",
+                    e
+            );
+
+        }
+
+        return respostas;
+
+    }
+
     private Resposta mapearResposta(ResultSet rs)
             throws SQLException {
 

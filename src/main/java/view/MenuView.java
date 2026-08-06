@@ -1,5 +1,6 @@
 package view;
 
+import model.Usuario;
 import util.SessaoUsuario;
 
 import javax.swing.*;
@@ -8,14 +9,16 @@ import java.awt.*;
 public class MenuView extends JFrame {
 
         private final boolean administrador;
+        private final Usuario usuario;
 
         private JButton btnNovaSolicitacao;
         private JButton btnListarSolicitacoes;
         private JButton btnCadastrarUsuario;
         private JButton btnSair;
 
-        public MenuView(boolean administrador) {
+        public MenuView(boolean administrador, Usuario usuario) {
                 this.administrador = administrador;
+                this.usuario = usuario;
 
                 configurarJanela();
                 criarComponentes();
@@ -76,10 +79,6 @@ public class MenuView extends JFrame {
                 painelBotoes.add(btnNovaSolicitacao);
                 painelBotoes.add(btnListarSolicitacoes);
 
-                /*
-                 * O botão de cadastro só aparece
-                 * quando o usuário é administrador.
-                 */
                 if (administrador) {
                         painelBotoes.add(btnCadastrarUsuario);
                 }
@@ -103,11 +102,8 @@ public class MenuView extends JFrame {
                 });
 
                 btnNovaSolicitacao.addActionListener(evento -> {
-                        JOptionPane.showMessageDialog(
-                                        this,
-                                        "A tela de nova solicitação será criada posteriormente.",
-                                        "Nova solicitação",
-                                        JOptionPane.INFORMATION_MESSAGE);
+                        SolicitacaoFormView tela = new SolicitacaoFormView(usuario);
+                        tela.setVisible(true);
                 });
 
                 btnListarSolicitacoes.addActionListener(evento -> {
