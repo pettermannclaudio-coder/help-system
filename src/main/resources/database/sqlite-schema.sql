@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS solicitacao (
     descricao TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'ABERTA'
         CHECK (status IN ('ABERTA', 'RESPONDIDA', 'RESOLVIDA')),
+    prioridade TEXT NOT NULL DEFAULT 'MÉDIA' CHECK (status IN ('BAIXA', 'MÉDIA', 'ALTA'))
     data_criacao TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     usuario_id INTEGER NOT NULL,
     departamento_id INTEGER NOT NULL,
