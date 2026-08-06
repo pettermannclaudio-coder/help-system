@@ -16,6 +16,7 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 public class MenuView extends JFrame {
 
@@ -171,22 +172,41 @@ public class MenuView extends JFrame {
     }
 
     private void carregarSolicitacoes() {
-        try {
-            Departamento categoria = cbCategoria.getSelectedItem() instanceof Departamento d
-                    ? d : null;
-            String status = TODOS.equals(cbStatus.getSelectedItem())
-                    ? null : (String) cbStatus.getSelectedItem();
-            boolean porPrioridade = "Prioridade".equals(cbOrdenacao.getSelectedItem());
 
-            List<Solicitacao> solicitacoes = solicitacaoService.listarParaUsuario(
-                    usuario,
-                    categoria == null ? null : categoria.getId(),
-                    status,
-                    txtColaborador.getText(),
-                    porPrioridade);
+        try {
+
+            Departamento categoria =
+                    cbCategoria.getSelectedItem() instanceof Departamento d
+                            ? d
+                            : null;
+
+            String status =
+                    TODOS.equals(cbStatus.getSelectedItem())
+                            ? null
+                            : (String) cbStatus.getSelectedItem();
+
+            String colaborador =
+                    txtColaborador.getText().trim();
+
+            if (colaborador.isBlank()) {
+                colaborador = null;
+            }
+
+            boolean ordenarPorPrioridade =
+                    "Prioridade".equals(cbOrdenacao.getSelectedItem());
+
+            List<Solicitacao> solicitacoes =
+                    solicitacaoService.buscar(
+                            categoria,
+                            status,
+                            colaborador,
+                            ordenarPorPrioridade
+                    );
 
             modeloTabela.setRowCount(0);
+
             for (Solicitacao solicitacao : solicitacoes) {
+
                 modeloTabela.addRow(new Object[]{
                         solicitacao.getId(),
                         solicitacao.getTitulo(),
@@ -196,10 +216,18 @@ public class MenuView extends JFrame {
                         solicitacao.getPrioridade(),
                         formatarData(solicitacao.getDataCriacao())
                 });
+
             }
+
         } catch (RuntimeException erro) {
-            mostrarErro("Não foi possível carregar as solicitações.", erro);
+
+            mostrarErro(
+                    "Não foi possível carregar as solicitações.",
+                    erro
+            );
+
         }
+
     }
 
     private void limparFiltros() {
@@ -338,6 +366,10 @@ public class MenuView extends JFrame {
         if (solicitacao == null) {
             return;
         }
+        if (!Objects.equals(usuario.getId(), solicitacao.getUsuario().getId())) {
+            mostrarAviso("Não é possível alterar o status de uma solicitação que não é sua");
+            return;
+        }
         if (!confirmar("Marcar esta solicitação como resolvida?")) {
             return;
         }
@@ -353,6 +385,11 @@ public class MenuView extends JFrame {
 
     private void excluirSelecionada() {
         Solicitacao solicitacao = obterSelecionada();
+        if (!Objects.equals(usuario.getId(), solicitacao.getUsuario().getId())){
+            mostrarAviso("Não é possível excluir uma solicitação que não é sua");
+            return;
+        }
+
         if (solicitacao == null || !confirmar("Excluir definitivamente esta solicitação?")) {
             return;
         }
