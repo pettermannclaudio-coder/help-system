@@ -43,14 +43,6 @@ CREATE TABLE usuario (
 
 );
 
-insert into usuario (nome, email, senha, tipo, departamento_id) values (
-        'Oliver Edson Gomes',
-        'oliver.edson.gomes@hotmail.it',
-        "M3dRN3JWx0",
-        "ADMIN",
-        8
-      );
-
 CREATE TABLE solicitacao(
 
     id INT AUTO_INCREMENT PRIMARY KEY,

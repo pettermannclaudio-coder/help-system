@@ -103,6 +103,29 @@ public class UsuarioService {
         return usuario;
     }
 
+    public Usuario garantirAdministradorInicial(
+            String nome,
+            String email,
+            String senha,
+            Departamento departamento) {
+        String emailNormalizado = ValidationUtil.validarENormalizarEmail(email);
+        Usuario existente = usuarioDAO.buscarPorEmail(emailNormalizado);
+
+        if (existente != null) {
+            if (!PasswordUtil.hashValido(existente.getSenha())) {
+                atualizar(existente, senha);
+            }
+            return existente;
+        }
+
+        return cadastrar(
+                nome,
+                emailNormalizado,
+                senha,
+                TipoUsuario.ADMIN,
+                departamento);
+    }
+
     public Usuario buscarPorId(int id) {
         validarId(id);
 
