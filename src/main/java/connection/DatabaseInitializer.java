@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -21,8 +22,6 @@ public final class DatabaseInitializer {
             return;
         }
 
-        String schema = carregarSchema();
-
         try (
                 Connection connection = ConnectionFactory.getConnection();
                 Statement statement = connection.createStatement()
@@ -32,33 +31,36 @@ public final class DatabaseInitializer {
                     SQLITE_SCHEMA
             );
 
+            adicionarPrioridadeSeNecessario(statement);
 
             executarArquivoSql(
                     statement,
                     SQLITE_DATA
             );
-            for (String comando : schema.split(";")) {
-                if (!comando.isBlank()) {
-                    statement.execute(comando.trim());
-                }
-            }
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao inicializar o banco SQLite.", e);
         }
     }
 
-    private static String carregarSchema() {
-        try (InputStream input = DatabaseInitializer.class
-                .getResourceAsStream(SQLITE_SCHEMA)) {
-            if (input == null) {
-                throw new IllegalStateException(
-                        "Schema SQLite não encontrado: " + SQLITE_SCHEMA
-                );
+    private static void adicionarPrioridadeSeNecessario(Statement statement)
+            throws SQLException {
+        boolean possuiPrioridade = false;
+        try (ResultSet colunas = statement.executeQuery(
+                "PRAGMA table_info(solicitacao)")) {
+            while (colunas.next()) {
+                if ("prioridade".equalsIgnoreCase(colunas.getString("name"))) {
+                    possuiPrioridade = true;
+                    break;
+                }
             }
+        }
 
-            return new String(input.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException("Erro ao ler o schema SQLite.", e);
+        if (!possuiPrioridade) {
+            statement.execute("""
+                    ALTER TABLE solicitacao
+                    ADD COLUMN prioridade TEXT NOT NULL DEFAULT 'MEDIA'
+                    CHECK (prioridade IN ('BAIXA', 'MEDIA', 'ALTA'))
+                    """);
         }
     }
 

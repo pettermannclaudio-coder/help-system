@@ -4,10 +4,15 @@ import connection.ConnectionFactory;
 import model.*;
 
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RespostaDAO implements InterfaceDAO<Resposta> {
+
+    private static final DateTimeFormatter SQLITE_DATE_TIME =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public void salvar(Resposta resposta) {
@@ -23,14 +28,21 @@ public class RespostaDAO implements InterfaceDAO<Resposta> {
 
         try (
                 Connection connection = ConnectionFactory.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)
+                PreparedStatement statement = connection.prepareStatement(
+                        sql, Statement.RETURN_GENERATED_KEYS)
         ) {
             statement.setString(1, resposta.getDescricao());
-            statement.setTimestamp(2, Timestamp.valueOf(resposta.getDataResposta()));
+            definirDataResposta(statement, 2, resposta.getDataResposta());
             statement.setInt(3, resposta.getUsuario().getId());
             statement.setInt(4, resposta.getSolicitacao().getId());
 
             statement.executeUpdate();
+
+            try (ResultSet chaves = statement.getGeneratedKeys()) {
+                if (chaves.next()) {
+                    resposta.setId(chaves.getInt(1));
+                }
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao salvar resposta.", e);
@@ -107,7 +119,7 @@ public class RespostaDAO implements InterfaceDAO<Resposta> {
     public List<Resposta> listar() {
 
         List<Resposta> respostas = new ArrayList<>();
-        String sql = "Select * FROM resposta ORDER BY r.data_resposta";
+        String sql = "SELECT * FROM resposta ORDER BY data_resposta";
 
         try (
                 Connection connection = ConnectionFactory.getConnection();
@@ -212,7 +224,7 @@ public class RespostaDAO implements InterfaceDAO<Resposta> {
         Resposta resposta = new Resposta();
         resposta.setId(rs.getInt("id"));
         resposta.setDescricao(rs.getString("texto"));
-        resposta.setDataResposta(rs.getTimestamp("data_resposta").toLocalDateTime());
+        resposta.setDataResposta(lerDataResposta(rs));
         resposta.setUsuario(
                 usuario
         );
@@ -223,5 +235,27 @@ public class RespostaDAO implements InterfaceDAO<Resposta> {
 
         return resposta;
 
+    }
+
+    private void definirDataResposta(
+            PreparedStatement statement, int indice, LocalDateTime data)
+            throws SQLException {
+        if (ConnectionFactory.isSqlite()) {
+            statement.setString(indice, data.format(SQLITE_DATE_TIME));
+        } else {
+            statement.setTimestamp(indice, Timestamp.valueOf(data));
+        }
+    }
+
+    private LocalDateTime lerDataResposta(ResultSet resultado)
+            throws SQLException {
+        if (ConnectionFactory.isSqlite()) {
+            String valor = resultado.getString("data_resposta");
+            return valor == null
+                    ? null
+                    : LocalDateTime.parse(valor, SQLITE_DATE_TIME);
+        }
+        Timestamp timestamp = resultado.getTimestamp("data_resposta");
+        return timestamp == null ? null : timestamp.toLocalDateTime();
     }
 }

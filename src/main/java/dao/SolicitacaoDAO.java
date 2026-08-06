@@ -1,7 +1,6 @@
 package dao;
 
 import connection.ConnectionFactory;
-import dao.UsuarioDAO;
 import model.*;
 
 import java.sql.*;
@@ -53,7 +52,7 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
                     solicitacao.getStatus());
             statement.setString(
                     4,
-                    solicitacao.getPrioridade()
+                    solicitacao.getPrioridade().name()
             );
 
             definirDataCriacao(
@@ -119,7 +118,7 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
                     solicitacao.getStatus());
             statement.setString(
                     5,
-                    solicitacao.getPrioridade()
+                    solicitacao.getPrioridade().name()
             );
 
             statement.setInt(
@@ -305,5 +304,58 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public boolean excluirDoUsuario(int id, int usuarioId) {
+        String excluirRespostas = """
+                DELETE FROM resposta
+                WHERE solicitacao_id IN (
+                    SELECT id FROM solicitacao WHERE id=? AND usuario_id=?
+                )
+                """;
+        String excluirSolicitacao =
+                "DELETE FROM solicitacao WHERE id=? AND usuario_id=?";
+        try (Connection connection = ConnectionFactory.getConnection()) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement respostas = connection.prepareStatement(excluirRespostas);
+                 PreparedStatement solicitacao = connection.prepareStatement(excluirSolicitacao)) {
+                respostas.setInt(1, id);
+                respostas.setInt(2, usuarioId);
+                respostas.executeUpdate();
+                solicitacao.setInt(1, id);
+                solicitacao.setInt(2, usuarioId);
+                boolean excluiu = solicitacao.executeUpdate() > 0;
+                connection.commit();
+                return excluiu;
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao excluir solicitação.", e);
+        }
+    }
+
+    public boolean marcarComoResolvidaDoUsuario(int id, int usuarioId) {
+        String sql = "UPDATE solicitacao SET status='RESOLVIDA' WHERE id=? AND usuario_id=?";
+        try (Connection connection = ConnectionFactory.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            statement.setInt(2, usuarioId);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao resolver solicitação.", e);
+        }
+    }
+
+    public void marcarComoRespondida(int id) {
+        String sql = "UPDATE solicitacao SET status='RESPONDIDA' WHERE id=? AND status='ABERTA'";
+        try (Connection connection = ConnectionFactory.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar status da solicitação.", e);
+        }
     }
 }

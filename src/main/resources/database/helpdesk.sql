@@ -47,7 +47,7 @@ insert into usuario (nome, email, senha, tipo, departamento_id) values (
         'Oliver Edson Gomes',
         'oliver.edson.gomes@hotmail.it',
         "M3dRN3JWx0",
-        "Admin",
+        "ADMIN",
         8
       );
 
@@ -62,7 +62,7 @@ CREATE TABLE solicitacao(
         'BAIXA',
         'MEDIA',
         'ALTA'
-    ) DEFAULT 'MEDIA'
+    ) NOT NULL DEFAULT 'MEDIA',
     data_criacao DATETIME
         DEFAULT CURRENT_TIMESTAMP,
     usuario_id INT NOT NULL,

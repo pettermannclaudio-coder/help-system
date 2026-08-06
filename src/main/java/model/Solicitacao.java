@@ -10,7 +10,7 @@ public class Solicitacao {
     private Departamento departamento;
     private Usuario usuario;
     private String status;
-    private String prioridade;
+    private PrioridadeSolicitacao prioridade = PrioridadeSolicitacao.MEDIA;
     private LocalDateTime dataCriacao;
 
     public Solicitacao() {
@@ -26,7 +26,14 @@ public class Solicitacao {
         this.status = status;
         this.departamento = departamento;
         this.dataCriacao = dataCriacao;
-        this.prioridade = prioridade;
+        setPrioridade(prioridade);
+    }
+
+    public Solicitacao(Integer id, String titulo, String descricao,
+                       Usuario usuario, String status, Departamento departamento,
+                       LocalDateTime dataCriacao) {
+        this(id, titulo, descricao, usuario, status, departamento,
+                dataCriacao, PrioridadeSolicitacao.MEDIA.name());
     }
 
 
@@ -70,11 +77,17 @@ public class Solicitacao {
         this.status = status;
     }
 
-    public String getPrioridade() {
+    public PrioridadeSolicitacao getPrioridade() {
         return prioridade;
     }
 
     public void setPrioridade(String prioridade) {
+        this.prioridade = prioridade == null || prioridade.isBlank()
+                ? PrioridadeSolicitacao.MEDIA
+                : PrioridadeSolicitacao.valueOf(prioridade.toUpperCase());
+    }
+
+    public void setPrioridade(PrioridadeSolicitacao prioridade) {
         this.prioridade = prioridade;
     }
 
