@@ -70,8 +70,8 @@ public class CadastroView extends JFrame {
         txtSenha = new JPasswordField(24);
         txtConfirmarSenha = new JPasswordField(24);
 
-        comboPerfil = new JComboBox<>(new String[] { "COMUM" });
-        comboPerfil.setEnabled(false);
+        comboPerfil = new JComboBox<>(new String[] { "COMUM", "ADMIN" });
+        comboPerfil.setEnabled(true);
         comboDepartamento = new JComboBox<>();
 
         btnCadastrar = new JButton("Cadastrar");

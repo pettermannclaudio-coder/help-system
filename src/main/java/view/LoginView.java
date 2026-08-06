@@ -73,7 +73,7 @@ public class LoginView extends JFrame {
 
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER));
         painelBotoes.add(btnEntrar);
-        painelBotoes.add(btnCadastrar);
+//        painelBotoes.add(btnCadastrar);
         adicionar(painelPrincipal, painelBotoes, gbc, 0, 4, 2);
 
         add(painelPrincipal);
