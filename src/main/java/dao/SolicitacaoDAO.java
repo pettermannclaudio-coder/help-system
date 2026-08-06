@@ -306,6 +306,81 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
 
     }
 
+    public List<Solicitacao> buscar(
+            Departamento departamento,
+            String status,
+            String colaborador,
+            boolean ordenarPorPrioridade
+    ) {
+
+        List<Solicitacao> lista = new ArrayList<>();
+
+        StringBuilder sql = new StringBuilder("""
+        SELECT s.*
+        FROM solicitacao s
+        INNER JOIN usuario u
+            ON s.usuario_id = u.id
+        WHERE 1 = 1
+    """);
+
+        List<Object> parametros = new ArrayList<>();
+
+        if (departamento != null) {
+            sql.append(" AND s.departamento_id = ?");
+            parametros.add(departamento.getId());
+        }
+
+        if (status != null) {
+            sql.append(" AND s.status = ?");
+            parametros.add(status);
+        }
+
+        if (colaborador != null) {
+            sql.append(" AND u.nome LIKE ?");
+            parametros.add("%" + colaborador + "%");
+        }
+
+        if (ordenarPorPrioridade) {
+
+            sql.append("""
+            ORDER BY
+            CASE s.prioridade
+                WHEN 'ALTA' THEN 1
+                WHEN 'MEDIA' THEN 2
+                WHEN 'BAIXA' THEN 3
+            END
+        """);
+
+        } else {
+
+            sql.append(" ORDER BY s.data_criacao DESC");
+
+        }
+
+        try (
+                Connection connection = ConnectionFactory.getConnection();
+                PreparedStatement statement =
+                        connection.prepareStatement(sql.toString())
+        ) {
+
+            for (int i = 0; i < parametros.size(); i++) {
+                statement.setObject(i + 1, parametros.get(i));
+            }
+
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                lista.add(criarSolicitacao(rs));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return lista;
+
+    }
+
     public boolean excluirDoUsuario(int id, int usuarioId) {
         String excluirRespostas = """
                 DELETE FROM resposta

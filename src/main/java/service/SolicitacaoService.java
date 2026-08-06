@@ -3,6 +3,7 @@ package service;
 import dao.SolicitacaoDAO;
 import model.Solicitacao;
 import model.TipoUsuario;
+import model.Departamento;
 import model.Usuario;
 
 import java.time.LocalDateTime;
@@ -131,6 +132,22 @@ public class SolicitacaoService {
         if (!solicitacaoDAO.excluirDoUsuario(solicitacaoId, usuario.getId())) {
             throw new SecurityException("Somente o autor pode excluir a solicitação.");
         }
+    }
+
+    public List<Solicitacao> buscar(
+            Departamento departamento,
+            String status,
+            String colaborador,
+            boolean ordenarPorPrioridade
+    ) {
+
+        return solicitacaoDAO.buscar(
+                departamento,
+                status,
+                colaborador,
+                ordenarPorPrioridade
+        );
+
     }
 
     public void marcarComoResolvida(int solicitacaoId, Usuario usuario) {
