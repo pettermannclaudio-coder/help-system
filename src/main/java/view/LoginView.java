@@ -116,7 +116,7 @@ public class LoginView extends JFrame {
                     JOptionPane.INFORMATION_MESSAGE);
 
             boolean administrador = usuario.getTipo() == TipoUsuario.ADMIN;
-            new MenuView(administrador).setVisible(true);
+            new MenuView(administrador, SessaoUsuario.getUsuarioAtual()).setVisible(true);
             dispose();
         } catch (IllegalArgumentException e) {
             mostrarAviso(e.getMessage());

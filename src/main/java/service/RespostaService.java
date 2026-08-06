@@ -88,4 +88,9 @@ public class RespostaService {
             throw new IllegalArgumentException("Solicitação inválida.");
         }
     }
+
+    public List<Resposta> buscarPorSolicitacao(int solicitacaoId) {
+        return respostaDAO.buscarPorSolicitacao(solicitacaoId);
+    }
+
 }
