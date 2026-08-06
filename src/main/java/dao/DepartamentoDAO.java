@@ -128,4 +128,33 @@ public class DepartamentoDAO implements InterfaceDAO<Departamento> {
 
     }
 
+    public boolean existePorNome(String nome) {
+
+        String sql =
+                "SELECT COUNT(*) FROM departamento WHERE UPPER(nome) = UPPER(?)";
+
+        try (Connection conexao = ConnectionFactory.getConnection();
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
+
+            ps.setString(1, nome);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+            return false;
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Erro ao verificar departamento.",
+                    e
+            );
+
+        }
+
+    }
+
 }
