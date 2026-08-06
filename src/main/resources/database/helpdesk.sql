@@ -58,6 +58,11 @@ CREATE TABLE solicitacao(
     descricao TEXT NOT NULL,
     status ENUM('ABERTA','RESPONDIDA','RESOLVIDA')
         DEFAULT 'ABERTA',
+    prioridade ENUM(
+        'BAIXA',
+        'MEDIA',
+        'ALTA'
+    ) DEFAULT 'MEDIA'
     data_criacao DATETIME
         DEFAULT CURRENT_TIMESTAMP,
     usuario_id INT NOT NULL,
@@ -66,7 +71,6 @@ CREATE TABLE solicitacao(
         REFERENCES usuario(id),
     FOREIGN KEY(departamento_id)
         REFERENCES departamento(id)
-
 );
 
 CREATE TABLE resposta (

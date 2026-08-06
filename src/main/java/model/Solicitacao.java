@@ -10,6 +10,7 @@ public class Solicitacao {
     private Departamento departamento;
     private Usuario usuario;
     private String status;
+    private String prioridade;
     private LocalDateTime dataCriacao;
 
     public Solicitacao() {
@@ -17,7 +18,7 @@ public class Solicitacao {
 
     public Solicitacao(Integer id, String titulo, String descricao,
                        Usuario usuario, String status, Departamento departamento,
-                       LocalDateTime dataCriacao) {
+                       LocalDateTime dataCriacao, String prioridade) {
         this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
@@ -25,6 +26,7 @@ public class Solicitacao {
         this.status = status;
         this.departamento = departamento;
         this.dataCriacao = dataCriacao;
+        this.prioridade = prioridade;
     }
 
 
@@ -66,6 +68,14 @@ public class Solicitacao {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getPrioridade() {
+        return prioridade;
+    }
+
+    public void setPrioridade(String prioridade) {
+        this.prioridade = prioridade;
     }
 
     public LocalDateTime getDataCriacao() {

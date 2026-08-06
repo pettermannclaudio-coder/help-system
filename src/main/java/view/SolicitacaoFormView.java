@@ -14,7 +14,9 @@ public class SolicitacaoFormView extends JFrame {
 
     private JTextField txtTitulo;
     private JTextArea txtDescricao;
+
     private JComboBox<Departamento> cbDepartamento;
+    private JComboBox<String> cbPrioridade;
 
     private JButton btnSalvar;
     private JButton btnCancelar;
@@ -22,9 +24,12 @@ public class SolicitacaoFormView extends JFrame {
     private final SolicitacaoService solicitacaoService =
             new SolicitacaoService();
 
-    private final DepartamentoService departamentoService = new DepartamentoService();
+    private final DepartamentoService departamentoService =
+            new DepartamentoService();
 
-
+    /*
+     * Usuário logado.
+     */
     private final Usuario usuario;
 
     public SolicitacaoFormView(Usuario usuario) {
@@ -36,17 +41,20 @@ public class SolicitacaoFormView extends JFrame {
         criarComponentes();
 
         carregarDepartamentos();
+
     }
 
     private void configurarJanela() {
 
         setTitle("Nova Solicitação");
 
-        setSize(600, 450);
+        setSize(650, 500);
 
         setLocationRelativeTo(null);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        setResizable(false);
 
     }
 
@@ -56,9 +64,13 @@ public class SolicitacaoFormView extends JFrame {
 
         GridBagConstraints gbc = new GridBagConstraints();
 
-        gbc.insets = new Insets(8,8,8,8);
+        gbc.insets = new Insets(8, 8, 8, 8);
 
         gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        //------------------------------------------
+        // Título
+        //------------------------------------------
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -74,13 +86,31 @@ public class SolicitacaoFormView extends JFrame {
         gbc.gridx = 0;
         gbc.gridy++;
 
-        painel.add(new JLabel("Categoria:"), gbc);
+        painel.add(new JLabel("Departamento:"), gbc);
 
         gbc.gridx = 1;
 
         cbDepartamento = new JComboBox<>();
 
         painel.add(cbDepartamento, gbc);
+
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+
+        painel.add(new JLabel("Prioridade:"), gbc);
+
+        gbc.gridx = 1;
+
+        cbPrioridade = new JComboBox<>();
+
+        cbPrioridade.addItem("BAIXA");
+        cbPrioridade.addItem("MEDIA");
+        cbPrioridade.addItem("ALTA");
+
+        cbPrioridade.setSelectedItem("MEDIA");
+
+        painel.add(cbPrioridade, gbc);
 
         gbc.gridx = 0;
         gbc.gridy++;
@@ -91,7 +121,7 @@ public class SolicitacaoFormView extends JFrame {
 
         gbc.gridx = 1;
 
-        txtDescricao = new JTextArea(8,30);
+        txtDescricao = new JTextArea(8, 30);
 
         txtDescricao.setLineWrap(true);
 
@@ -101,6 +131,10 @@ public class SolicitacaoFormView extends JFrame {
                 new JScrollPane(txtDescricao);
 
         painel.add(scroll, gbc);
+
+        //------------------------------------------
+        // Botões
+        //------------------------------------------
 
         JPanel botoes = new JPanel();
 
@@ -122,9 +156,9 @@ public class SolicitacaoFormView extends JFrame {
 
     private void configurarEventos() {
 
-        btnCancelar.addActionListener(e -> dispose());
-
         btnSalvar.addActionListener(e -> salvar());
+
+        btnCancelar.addActionListener(e -> dispose());
 
     }
 
@@ -150,6 +184,8 @@ public class SolicitacaoFormView extends JFrame {
                     "Informe o título."
             );
 
+            txtTitulo.requestFocus();
+
             return;
 
         }
@@ -160,6 +196,8 @@ public class SolicitacaoFormView extends JFrame {
                     this,
                     "Informe a descrição."
             );
+
+            txtDescricao.requestFocus();
 
             return;
 
@@ -172,11 +210,11 @@ public class SolicitacaoFormView extends JFrame {
                 new Solicitacao();
 
         solicitacao.setTitulo(
-                txtTitulo.getText()
+                txtTitulo.getText().trim()
         );
 
         solicitacao.setDescricao(
-                txtDescricao.getText()
+                txtDescricao.getText().trim()
         );
 
         solicitacao.setDepartamento(
@@ -191,18 +229,39 @@ public class SolicitacaoFormView extends JFrame {
                 "ABERTA"
         );
 
+        solicitacao.setPrioridade(
+                cbPrioridade
+                        .getSelectedItem()
+                        .toString()
+        );
+
         solicitacao.setDataCriacao(
                 LocalDateTime.now()
         );
 
-        solicitacaoService.salvar(solicitacao);
+        try {
 
-        JOptionPane.showMessageDialog(
-                this,
-                "Solicitação cadastrada com sucesso!"
-        );
+            solicitacaoService.salvar(
+                    solicitacao
+            );
 
-        dispose();
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Solicitação cadastrada com sucesso!"
+            );
+
+            dispose();
+
+        } catch (Exception e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    e.getMessage(),
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE
+            );
+
+        }
 
     }
 
