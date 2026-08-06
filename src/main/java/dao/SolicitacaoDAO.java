@@ -26,11 +26,12 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
                     titulo,
                     descricao,
                     status,
+                    prioridade,
                     data_criacao,
                     usuario_id,
                     departamento_id
                 )
-                VALUES (?,?,?,?,?,?)
+                VALUES (?,?,?,?,?,?,?)
                 """;
 
         try (Connection connection = ConnectionFactory.getConnection();
@@ -50,18 +51,22 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
             statement.setString(
                     3,
                     solicitacao.getStatus());
+            statement.setString(
+                    4,
+                    solicitacao.getPrioridade()
+            );
 
             definirDataCriacao(
                     statement,
-                    4,
+                    5,
                     solicitacao.getDataCriacao());
 
             statement.setInt(
-                    5,
+                    6,
                     solicitacao.getUsuario().getId());
 
             statement.setInt(
-                    6,
+                    7,
                     solicitacao.getDepartamento().getId());
 
             int linhasAfetadas = statement.executeUpdate();
@@ -97,7 +102,8 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
                 SET titulo=?,
                     descricao=?,
                     departamento_id=?,
-                    status=?
+                    status=?,
+                    prioridade=?
                 WHERE id=?
                 """;
 
@@ -111,9 +117,13 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
             statement.setString(
                     4,
                     solicitacao.getStatus());
+            statement.setString(
+                    5,
+                    solicitacao.getPrioridade()
+            );
 
             statement.setInt(
-                    5,
+                    6,
                     solicitacao.getId());
 
             statement.executeUpdate();
@@ -208,6 +218,7 @@ public class SolicitacaoDAO implements InterfaceDAO<Solicitacao> {
         solicitacao.setTitulo(rs.getString("titulo"));
         solicitacao.setDescricao(rs.getString("descricao"));
         solicitacao.setStatus(rs.getString("status"));
+        solicitacao.setPrioridade(rs.getString("prioridade"));
         solicitacao.setDataCriacao(lerDataCriacao(rs));
         solicitacao.setUsuario(usuarioDAO.buscarPorId(rs.getInt("usuario_id")));
         solicitacao.setDepartamento(departamentoDAO.buscarPorId(rs.getInt("departamento_id")));
